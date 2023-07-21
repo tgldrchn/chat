@@ -12,7 +12,7 @@ export default async function handler(
   switch (req.method) {
     case "POST":
       const resultOne = await request("insertOne", {
-        document: { text: req.body },
+        document: JSON.parse(req.body),
       });
       res.status(200).json(resultOne);
       break;

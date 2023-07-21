@@ -3,6 +3,7 @@ import { SignOutButton } from "@clerk/nextjs";
 import { useEffect, useState } from "react";
 import { useUser } from "@clerk/nextjs";
 import Image from "next/image";
+import { json } from "stream/consumers";
 
 configureAbly({
   key: "DuUOOw.XrX9_A:kGOm0BRk6jVKod6bj9zimGuUBJw28_tamxKZZAFgqK4",
@@ -17,15 +18,14 @@ const HomePage = () => {
 
   const [channel] = useChannel("public-chat", (message) => {
     setMessages((prev) => [...prev, message]);
+    fetch("http://localhost:3000/api/messages", {
+      method: "POST",
+      body: JSON.stringify({ messages: message }),
+    });
   });
-
   async function sendMessage() {
     channel.publish("message", { text, date: Date.now() });
     setText("");
-    fetch("http://localhost:3000/api/messages", {
-      method: "POST",
-      body: text,
-    });
   }
 
   useEffect(() => {
@@ -42,6 +42,7 @@ const HomePage = () => {
       method: "DELETE",
     });
   }
+  console.log(prevMessages);
   return (
     <div
       style={{
@@ -80,29 +81,7 @@ const HomePage = () => {
                 color: "black",
               }}
             >
-              {message.text}
-            </div>
-          ))}
-        {messages &&
-          messages.map((message: any) => (
-            <div
-              onClick={() => remove(message._id)}
-              key={message.id}
-              style={{
-                height: 50,
-                width: 250,
-                backgroundColor: "white",
-                margin: 10,
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                color: "black",
-              }}
-            >
-              <div> {message.data.text}</div>
-              <div style={{ width: "100%", height: "100%", borderRadius: 50 }}>
-                <img src={user?.imageUrl} />
-              </div>
+              {/* {message.messages.data.text} */}
             </div>
           ))}
       </div>
